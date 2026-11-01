@@ -77,7 +77,7 @@ export function EmbedPlayer({ t, season, episode }: { t: Title; season: number; 
   return (
     <main className="mx-auto max-w-[1600px] px-4 pb-16 pt-6 md:px-8">
       <div className="mb-5 flex flex-wrap items-center gap-4">
-        <Link to="/titulo/$slug" params={{ slug: t.slug }} aria-label="Voltar" className="glass grid h-11 w-11 shrink-0 place-items-center rounded-full hover:bg-foreground/10">
+        <Link to="/titulo/$slug" params={{ slug: t.slug }} aria-label="Voltar" className="btn-glass grid h-11 w-11 shrink-0 place-items-center rounded-full">
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div className="min-w-0 flex-1">
@@ -89,7 +89,7 @@ export function EmbedPlayer({ t, season, episode }: { t: Title; season: number; 
         {isSeries && (
           <div className="flex w-full justify-end gap-2 sm:w-auto">
             {prev && (
-              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: prev.season, ep: prev.number }} aria-label="Episódio anterior" className="glass grid h-11 w-11 place-items-center rounded-full hover:bg-foreground/10">
+              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: prev.season, ep: prev.number }} aria-label="Episódio anterior" className="btn-glass grid h-11 w-11 place-items-center rounded-full">
                 <ChevronLeft className="h-5 w-5" />
               </Link>
             )}
