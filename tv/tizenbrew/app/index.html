@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NOIR PLAY — Samsung TV</title></head>
+<body>
+<h1>NOIR PLAY</h1>
+<p>Endereço publicado do NOIR PLAY</p>
+<form id="launch"><input id="address" type="url" required placeholder="https://" aria-label="Endereço publicado"><button type="submit">Abrir</button></form>
+<p id="error" role="alert"></p>
+<script>
+  var field = document.getElementById('address');
+  try { field.value = localStorage.getItem('noirplay:host') || ''; } catch (_) {}
+  field.focus();
+  document.getElementById('launch').addEventListener('submit', function (event) {
+    event.preventDefault();
+    try {
+      var url = new URL(field.value);
+      if (url.protocol !== 'https:') throw new Error('Use um endereço HTTPS.');
+      url.searchParams.set('tv', '1');
+      try { localStorage.setItem('noirplay:host', field.value); } catch (_) {}
+      location.replace(url.href);
+    } catch (_) { document.getElementById('error').textContent = 'Informe um endereço HTTPS válido.'; }
+  });
+</script>
+</body></html>

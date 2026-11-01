@@ -1,0 +1,10 @@
+{
+  "name": "noir-play-tizenbrew",
+  "version": "0.1.0",
+  "description": "NOIR PLAY launcher for TizenBrew",
+  "packageType": "app",
+  "appName": "NOIR PLAY",
+  "appPath": "app/index.html",
+  "keys": [],
+  "files": ["app"]
+}

@@ -1,0 +1,13 @@
+# Tasks
+- [x] Hide navigation after inactivity during playback and restore it on interaction.
+- [x] Replace the favicon with NOIR PLAY branding and remove the old favicon.
+- [ ] Hide Lovable badge — blocked by required editor permission and Pro-or-higher plan.
+- [x] Show episode names/descriptions, remember selected episode and permit explicit watched marks; retain native video timestamps.
+- [x] Translate interface fallback text to Brazilian Portuguese and investigate no-key localized metadata.
+- [x] Localize catalog and episode metadata via free browser translation with local cache.
+- [x] Prepare a TizenBrew launcher package and site directional-key navigation.
+- [ ] Install and validate on Samsung TV — needs published HTTPS site, npm module distribution, TV model and physical-device test.
+- [x] Use live Cinemeta metadata and existing native-source/embed selection.
+- [x] Preserve shared floating navbar/footer and hide footer during playback.
+- [x] Verify catalog rendering, episode persistence, inactivity navigation and desktop/mobile layouts.
+- [ ] Verify external video playback and exact embedded timestamps — provider presents Cloudflare verification; no documented progress messaging API verified.

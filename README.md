@@ -1,12 +1,12 @@
-# A Simple Hello
+# Remix of Remix of Remix of Remix of Remix of Faça Tudo Certo
 
-faca um simples bgl de texto apenas escrito oi um txt nada mias
+FACA TUDO ISSO SEM ERROS
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/7cf1c7e2-d581-4cdc-9fb2-23fb395a826d).
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/9ebad835-bc50-45a6-97fb-22e4de337c7a).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
 - **Stay in sync**: every change made in Lovable is committed straight to this repository.

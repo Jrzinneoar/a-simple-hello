@@ -10,33 +10,115 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BuscarRouteImport } from './routes/buscar'
+import { Route as FilmesRouteImport } from './routes/filmes'
+import { Route as MinhaListaRouteImport } from './routes/minha-lista'
+import { Route as SeriesRouteImport } from './routes/series'
+import { Route as AssistirSlugRouteImport } from './routes/assistir.$slug'
+import { Route as TituloSlugRouteImport } from './routes/titulo.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BuscarRoute = BuscarRouteImport.update({
+  id: '/buscar',
+  path: '/buscar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FilmesRoute = FilmesRouteImport.update({
+  id: '/filmes',
+  path: '/filmes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MinhaListaRoute = MinhaListaRouteImport.update({
+  id: '/minha-lista',
+  path: '/minha-lista',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SeriesRoute = SeriesRouteImport.update({
+  id: '/series',
+  path: '/series',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistirSlugRoute = AssistirSlugRouteImport.update({
+  id: '/assistir/$slug',
+  path: '/assistir/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TituloSlugRoute = TituloSlugRouteImport.update({
+  id: '/titulo/$slug',
+  path: '/titulo/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/buscar': typeof BuscarRoute
+  '/filmes': typeof FilmesRoute
+  '/minha-lista': typeof MinhaListaRoute
+  '/series': typeof SeriesRoute
+  '/assistir/$slug': typeof AssistirSlugRoute
+  '/titulo/$slug': typeof TituloSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/buscar': typeof BuscarRoute
+  '/filmes': typeof FilmesRoute
+  '/minha-lista': typeof MinhaListaRoute
+  '/series': typeof SeriesRoute
+  '/assistir/$slug': typeof AssistirSlugRoute
+  '/titulo/$slug': typeof TituloSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/buscar': typeof BuscarRoute
+  '/filmes': typeof FilmesRoute
+  '/minha-lista': typeof MinhaListaRoute
+  '/series': typeof SeriesRoute
+  '/assistir/$slug': typeof AssistirSlugRoute
+  '/titulo/$slug': typeof TituloSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/buscar'
+    | '/filmes'
+    | '/minha-lista'
+    | '/series'
+    | '/assistir/$slug'
+    | '/titulo/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/buscar'
+    | '/filmes'
+    | '/minha-lista'
+    | '/series'
+    | '/assistir/$slug'
+    | '/titulo/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/buscar'
+    | '/filmes'
+    | '/minha-lista'
+    | '/series'
+    | '/assistir/$slug'
+    | '/titulo/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuscarRoute: typeof BuscarRoute
+  FilmesRoute: typeof FilmesRoute
+  MinhaListaRoute: typeof MinhaListaRoute
+  SeriesRoute: typeof SeriesRoute
+  AssistirSlugRoute: typeof AssistirSlugRoute
+  TituloSlugRoute: typeof TituloSlugRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +130,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/buscar': {
+      id: '/buscar'
+      path: '/buscar'
+      fullPath: '/buscar'
+      preLoaderRoute: typeof BuscarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/filmes': {
+      id: '/filmes'
+      path: '/filmes'
+      fullPath: '/filmes'
+      preLoaderRoute: typeof FilmesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/minha-lista': {
+      id: '/minha-lista'
+      path: '/minha-lista'
+      fullPath: '/minha-lista'
+      preLoaderRoute: typeof MinhaListaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/series': {
+      id: '/series'
+      path: '/series'
+      fullPath: '/series'
+      preLoaderRoute: typeof SeriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistir/$slug': {
+      id: '/assistir/$slug'
+      path: '/assistir/$slug'
+      fullPath: '/assistir/$slug'
+      preLoaderRoute: typeof AssistirSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/titulo/$slug': {
+      id: '/titulo/$slug'
+      path: '/titulo/$slug'
+      fullPath: '/titulo/$slug'
+      preLoaderRoute: typeof TituloSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuscarRoute: BuscarRoute,
+  FilmesRoute: FilmesRoute,
+  MinhaListaRoute: MinhaListaRoute,
+  SeriesRoute: SeriesRoute,
+  AssistirSlugRoute: AssistirSlugRoute,
+  TituloSlugRoute: TituloSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
