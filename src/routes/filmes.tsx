@@ -30,7 +30,7 @@ export function Catalog({ kind, heading }: { kind: Kind; heading: string }) {
   });
   const seen = new Set<string>();
   const items = (q.data?.pages.flat() ?? []).filter((t) => !seen.has(t.slug) && !!seen.add(t.slug));
-  const chip = (a: boolean) => cn("rounded-full px-3 py-1.5 text-xs transition-colors", a ? "bg-foreground text-background" : "glass text-muted-foreground hover:text-foreground");
+  const chip = (a: boolean) => cn("rounded-full px-3 py-1.5 text-xs transition-colors", a ? "btn-primary font-semibold" : "glass text-muted-foreground hover:text-foreground");
 
   return (
     <main className="mx-auto max-w-[1500px] px-5 pb-28 pt-28 md:px-10">
@@ -51,7 +51,7 @@ export function Catalog({ kind, heading }: { kind: Kind; heading: string }) {
       </div>
       {q.hasNextPage && (
         <div className="mt-10 text-center">
-          <button onClick={() => q.fetchNextPage()} disabled={q.isFetchingNextPage} className="rounded-full bg-foreground px-6 py-2.5 text-sm font-semibold text-background">
+          <button onClick={() => q.fetchNextPage()} disabled={q.isFetchingNextPage} className="rounded-full btn-primary px-7 py-2.5 text-sm font-semibold">
             {q.isFetchingNextPage ? "Carregando…" : "Carregar mais"}
           </button>
         </div>
