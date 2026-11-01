@@ -73,7 +73,6 @@ export function EmbedPlayer({ t, season, episode }: { t: Title; season: number; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countdown]);
   const description = plainText(current?.summary) || fallback?.overview || (isSeries ? "Sinopse deste episódio indisponível." : t.overview);
-  const description = plainText(current?.summary) || fallback?.overview || (isSeries ? "Sinopse deste episódio indisponível." : t.overview);
   const epName = (n: number, name?: string) => (!name || /^episode\s*\d+$/i.test(name) ? `Episódio ${n}` : name);
   const currentName = epName(episode, current?.name ?? fallback?.title);
 
