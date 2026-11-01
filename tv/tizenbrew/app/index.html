@@ -1,24 +1,55 @@
 <!doctype html>
 <html lang="pt-BR">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NOIR PLAY — Samsung TV</title></head>
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOIR PLAY — Samsung TV</title>
+<style>
+  html,body{margin:0;height:100%;background:#0b0b0d;color:#f5f5f7;font-family:system-ui,sans-serif}
+  body{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#3a0a0e,#0b0b0d 60%)}
+  .box{width:min(90vw,900px);text-align:center}
+  h1{font-size:96px;margin:0;letter-spacing:2px}h1 span{color:#e50914}
+  p{font-size:28px;color:#b5b5bd}
+  input{width:100%;box-sizing:border-box;font-size:32px;padding:22px 28px;border-radius:999px;border:2px solid #333;background:#16161a;color:#fff;margin-top:20px}
+  input:focus,button:focus{outline:4px solid #e50914;outline-offset:4px}
+  button{margin-top:28px;font-size:32px;font-weight:700;padding:20px 64px;border:0;border-radius:999px;color:#fff;background:linear-gradient(135deg,#ff2d3d,#c40812);box-shadow:0 12px 40px -10px #e50914}
+  #error{color:#ff6b6b;min-height:36px}
+</style>
+</head>
 <body>
-<h1>NOIR PLAY</h1>
-<p>Endereço publicado do NOIR PLAY</p>
-<form id="launch"><input id="address" type="url" required placeholder="https://" aria-label="Endereço publicado"><button type="submit">Abrir</button></form>
-<p id="error" role="alert"></p>
+<div class="box">
+  <h1>NOIR<span>PLAY</span></h1>
+  <p id="status">Digite o endereço do site publicado</p>
+  <form id="launch">
+    <input id="address" type="url" required placeholder="https://seu-site.lovable.app" aria-label="Endereço do site">
+    <button type="submit">Abrir</button>
+  </form>
+  <p id="error" role="alert"></p>
+</div>
 <script>
+  // Coloque aqui o endereço publicado para abrir direto, sem digitar.
+  var DEFAULT_HOST = '';
   var field = document.getElementById('address');
-  try { field.value = localStorage.getItem('noirplay:host') || ''; } catch (_) {}
+  function open(value) {
+    var url = new URL(value);
+    if (url.protocol !== 'https:') throw new Error('https');
+    url.searchParams.set('tv', '1');
+    try { localStorage.setItem('noirplay:host', value); } catch (_) {}
+    location.replace(url.href);
+  }
+  var saved = '';
+  try { saved = localStorage.getItem('noirplay:host') || ''; } catch (_) {}
+  var host = saved || DEFAULT_HOST;
+  field.value = host;
+  if (host) {
+    document.getElementById('status').textContent = 'Abrindo… (aperte Voltar para trocar o endereço)';
+    var timer = setTimeout(function () { try { open(host); } catch (_) {} }, 1500);
+    document.addEventListener('keydown', function () { clearTimeout(timer); document.getElementById('status').textContent = 'Digite o endereço do site publicado'; }, { once: true });
+  }
   field.focus();
-  document.getElementById('launch').addEventListener('submit', function (event) {
-    event.preventDefault();
-    try {
-      var url = new URL(field.value);
-      if (url.protocol !== 'https:') throw new Error('Use um endereço HTTPS.');
-      url.searchParams.set('tv', '1');
-      try { localStorage.setItem('noirplay:host', field.value); } catch (_) {}
-      location.replace(url.href);
-    } catch (_) { document.getElementById('error').textContent = 'Informe um endereço HTTPS válido.'; }
+  document.getElementById('launch').addEventListener('submit', function (e) {
+    e.preventDefault();
+    try { open(field.value); } catch (_) { document.getElementById('error').textContent = 'Informe um endereço HTTPS válido.'; }
   });
 </script>
-</body></html>
+</body>
+</html>
