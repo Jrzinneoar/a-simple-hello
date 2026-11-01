@@ -73,118 +73,122 @@ export function EmbedPlayer({ t, season, episode }: { t: Title; season: number; 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [countdown]);
   const description = plainText(current?.summary) || fallback?.overview || (isSeries ? "Sinopse deste episódio indisponível." : t.overview);
+  const description = plainText(current?.summary) || fallback?.overview || (isSeries ? "Sinopse deste episódio indisponível." : t.overview);
+  const epName = (n: number, name?: string) => (!name || /^episode\s*\d+$/i.test(name) ? `Episódio ${n}` : name);
+  const currentName = epName(episode, current?.name ?? fallback?.title);
 
   return (
-    <main className="mx-auto max-w-[1600px] px-4 pb-16 pt-6 md:px-8">
-      <div className="mb-5 flex flex-wrap items-center gap-4">
-        <Link to="/titulo/$slug" params={{ slug: t.slug }} aria-label="Voltar" className="btn-glass grid h-11 w-11 shrink-0 place-items-center rounded-full">
+    <main className="mx-auto max-w-[1400px] px-4 pb-20 pt-6 md:px-8">
+      <header className="mb-5 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4">
+        <Link to="/titulo/$slug" params={{ slug: t.slug }} aria-label="Voltar" className="btn-glass grid h-11 w-11 place-items-center rounded-full">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <div className="min-w-0 flex-1">
-          <h1 className="font-display text-xl font-semibold md:text-2xl">{t.title}</h1>
-          <p className="text-sm text-muted-foreground">
-            {isSeries ? `Temporada ${season} · Episódio ${episode}${current || fallback ? ` — ${current?.name ?? fallback?.title}` : ""}` : `${t.year}`}
+        <div className="min-w-0">
+          <h1 className="truncate font-display text-xl font-bold md:text-2xl">{t.title}</h1>
+          <p className="truncate text-sm text-muted-foreground">
+            {isSeries ? <>T{season} · E{episode} — <Pt text={currentName} /></> : `${t.year}`}
           </p>
         </div>
         {isSeries && (
-          <div className="flex w-full justify-end gap-2 sm:w-auto">
+          <div className="flex gap-2">
             {prev && (
               <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: prev.season, ep: prev.number }} aria-label="Episódio anterior" className="btn-glass grid h-11 w-11 place-items-center rounded-full">
                 <ChevronLeft className="h-5 w-5" />
               </Link>
             )}
+            {next && (
+              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: next.season, ep: next.number }} aria-label="Próximo episódio" className="btn-primary grid h-11 w-11 place-items-center rounded-full">
+                <ChevronRight className="h-5 w-5" />
+              </Link>
+            )}
+          </div>
+        )}
+      </header>
+
+      <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-surface-deep shadow-2xl ring-1 ring-border">
+        {src && (
+          <iframe
+            key={src}
+            // No sandbox: providers detect it and replace the video with a warning screen.
+            referrerPolicy="no-referrer"
+            src={src}
+            title={`Player ${t.title}`}
+            className="absolute inset-0 h-full w-full"
+            aria-label={`Reproduzir ${t.title}`}
+            scrolling="no"
+            frameBorder={0}
+            allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
+            allowFullScreen
+          />
+        )}
+        {countdown !== null && next && (
+          <div className="absolute bottom-6 right-6 z-10 w-72 rounded-2xl glass p-4 shadow-2xl">
+            <p className="text-xs uppercase tracking-widest text-accent">Próximo episódio em {countdown}s</p>
+            <p className="mt-1 font-display font-semibold">T{next.season}:E{next.number} — <Pt text={epName(next.number, next.name)} /></p>
+            <div className="mt-3 flex gap-2">
+              <Button size="sm" onClick={goNext}><SkipForward /> Assistir agora</Button>
+              <Button size="sm" variant="ghost" onClick={() => setCountdown(null)}><X /> Cancelar</Button>
+            </div>
           </div>
         )}
       </div>
 
-      <div className={cn("grid gap-6", isSeries && "lg:grid-cols-[1fr_340px]")}>
-        <div>
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-surface-deep shadow-2xl ring-1 ring-border">
-            {src && (
-              <iframe
-                key={src}
-                // No sandbox: providers detect it and replace the video with a warning screen.
-                referrerPolicy="no-referrer"
-                src={src}
-                title={`Player ${t.title}`}
-                className="absolute inset-0 h-full w-full"
-                aria-label={`Reproduzir ${t.title}`}
-                scrolling="no"
-                frameBorder={0}
-                allow="autoplay; fullscreen; picture-in-picture; encrypted-media"
-                allowFullScreen
-              />
-            )}
-            {countdown !== null && next && (
-              <div className="absolute bottom-6 right-6 z-10 w-72 rounded-2xl glass p-4 shadow-2xl">
-                <p className="text-xs uppercase tracking-widest text-accent">Próximo episódio em {countdown}s</p>
-                <p className="mt-1 font-display font-semibold">T{next.season}:E{next.number} — {next.name}</p>
-                <div className="mt-3 flex gap-2">
-                  <Button size="sm" onClick={goNext}><SkipForward /> Assistir agora</Button>
-                  <Button size="sm" variant="ghost" onClick={() => setCountdown(null)}><X /> Cancelar</Button>
-                </div>
-              </div>
-            )}
-          </div>
-          <section className="mt-6 space-y-3">
-            <h2 className="font-display text-lg font-semibold">{isSeries ? `${episode}. ${current?.name ?? fallback?.title ?? `Episódio ${episode}`}` : t.title}</h2>
-            <p className="text-sm leading-relaxed text-muted-foreground"><Pt text={description} /></p>
-            {isSeries && <div className="flex flex-wrap gap-3 pt-2">
-              <Button variant={completed ? "secondary" : "outline"} aria-pressed={completed} onClick={() => library.saveProgress({ key: progressKey, slug: t.slug, position: completed ? 0 : 1, duration: 1 })}>
-                <Check /> {completed ? "Assistido" : "Marcar como assistido"}
-              </Button>
-              {next && <Button onClick={() => setCountdown(5)}><SkipForward /> Próximo episódio</Button>}
-            </div>}
-          </section>
+      <section className="mt-6 grid gap-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
+        <div className="min-w-0">
+          <h2 className="font-display text-xl font-bold">{isSeries ? <><span className="text-primary">{episode}.</span> <Pt text={currentName} /></> : t.title}</h2>
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground"><Pt text={description} /></p>
         </div>
-
         {isSeries && (
-          <aside className="glass flex max-h-[80vh] flex-col rounded-2xl p-4">
-            <p className="mb-3 font-display text-lg font-bold">Episódios</p>
-            <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+          <div className="flex flex-wrap gap-3">
+            <Button variant={completed ? "secondary" : "outline"} aria-pressed={completed} onClick={() => library.saveProgress({ key: progressKey, slug: t.slug, position: completed ? 0 : 1, duration: 1 })}>
+              <Check /> {completed ? "Assistido" : "Marcar como assistido"}
+            </Button>
+            {next && <Button onClick={() => setCountdown(5)}><SkipForward /> Próximo episódio</Button>}
+          </div>
+        )}
+      </section>
+
+      {isSeries && (
+        <section className="mt-12">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <h2 className="font-display text-2xl font-bold">Episódios</h2>
+            <div className="no-scrollbar flex max-w-full gap-2 overflow-x-auto p-1">
               {(seasons.length ? seasons : [season]).map((s) => (
-                <Link
-                  key={s}
-                  to="/assistir/$slug"
-                  params={{ slug: t.slug }}
-                  search={{ s, ep: 1 }}
-                  className={cn("shrink-0 rounded-full px-4 py-1.5 text-sm font-medium", s === season ? "btn-primary" : "btn-glass text-muted-foreground")}
-                >
-                  T{s}
+                <Link key={s} to="/assistir/$slug" params={{ slug: t.slug }} search={{ s, ep: 1 }}
+                  className={cn("shrink-0 rounded-full px-4 py-2 text-sm font-medium", s === season ? "btn-primary" : "btn-glass text-muted-foreground")}>
+                  Temporada {s}
                 </Link>
               ))}
             </div>
-            <ul className="mt-4 flex-1 space-y-2 overflow-y-auto pr-1">
-              {eps === null && <li className="text-sm text-muted-foreground">Carregando episódios…</li>}
-              {eps?.length === 0 && <li className="text-sm text-muted-foreground">Lista de episódios indisponível.</li>}
-              {inSeason.map((e) => {
-                const active = e.number === episode;
-                return (
-                  <li key={e.number}>
-                    <Link
-                      to="/assistir/$slug"
-                      params={{ slug: t.slug }}
-                      search={{ s: e.season, ep: e.number }}
-                      className={cn("group flex gap-3 rounded-xl p-2 text-sm transition-colors", active ? "bg-primary/15 ring-1 ring-primary/50" : "hover:bg-foreground/10")}
-                    >
-                      <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-muted">
-                        {e.image?.medium ? <img src={e.image.medium} alt="" loading="lazy" className="h-full w-full object-cover" /> : <img src={t.image} alt="" loading="lazy" className="h-full w-full object-cover opacity-60" />}
-                        <span className="absolute left-1 top-1 rounded bg-background/80 px-1.5 text-[10px] font-bold">{e.number}</span>
-                        {active && <span className="absolute inset-0 grid place-items-center bg-background/40"><SkipForward className="h-5 w-5 text-primary" /></span>}
-                        {progressPct(progress[`${t.slug}:s${e.season}e${e.number}`]) >= 95 && <span className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-primary-foreground"><Check aria-label="Assistido" className="h-3 w-3" /></span>}
-                      </div>
-                      <span className="min-w-0 flex-1">
-                        <span className={cn("line-clamp-1 block", active && "font-semibold text-primary")}><Pt text={e.name} /></span>
-                        {plainText(e.summary) && <span className="mt-1 line-clamp-2 block text-xs text-muted-foreground"><Pt text={plainText(e.summary)} /></span>}
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </aside>
-        )}
-      </div>
+          </div>
+          {eps === null && <p className="mt-6 text-sm text-muted-foreground">Carregando episódios…</p>}
+          {eps?.length === 0 && <p className="mt-6 text-sm text-muted-foreground">Lista de episódios indisponível.</p>}
+          <ul className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {inSeason.map((e) => {
+              const active = e.number === episode;
+              const done = progressPct(progress[`${t.slug}:s${e.season}e${e.number}`]) >= 95;
+              return (
+                <li key={e.number}>
+                  <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: e.season, ep: e.number }}
+                    className={cn("group ep-card block h-full overflow-hidden rounded-2xl ring-1", active ? "ring-2 ring-primary" : "ring-border")}>
+                    <div className="relative aspect-video overflow-hidden bg-muted">
+                      <img src={e.image?.medium ?? t.image} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute inset-0 fade-b opacity-70" />
+                      <span className="absolute left-3 top-3 rounded-md btn-primary px-2 py-0.5 font-display text-xs font-bold">E{e.number}</span>
+                      {active && <span className="absolute bottom-3 left-3 rounded-full bg-primary px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-primary-foreground">Assistindo</span>}
+                      {done && <span className="absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-foreground"><Check className="h-4 w-4" aria-label="Assistido" /></span>}
+                    </div>
+                    <div className="p-4">
+                      <p className={cn("line-clamp-1 font-display font-semibold", active && "text-primary")}><Pt text={epName(e.number, e.name)} /></p>
+                      {plainText(e.summary) && <p className="mt-2 line-clamp-3 text-sm text-muted-foreground"><Pt text={plainText(e.summary)} /></p>}
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
     </main>
   );
 }
