@@ -47,9 +47,6 @@ export function EmbedPlayer({ t, season, episode }: { t: Title; season: number; 
   const current = eps && idx >= 0 ? eps[idx] : undefined;
   const fallback = t.seasons?.find((s) => s.number === season)?.episodes.find((e) => e.number === episode);
   const navigate = useNavigate();
-  const [adBlock, setAdBlock] = useState(true);
-  useEffect(() => { setAdBlock(localStorage.getItem("noir:adblock") !== "off"); }, []);
-  const toggleAdBlock = () => setAdBlock((v) => { localStorage.setItem("noir:adblock", v ? "off" : "on"); return !v; });
   const [countdown, setCountdown] = useState<number | null>(null);
   const goNext = () => {
     library.saveProgress({ key: progressKey, slug: t.slug, position: 1, duration: 1 });
@@ -105,9 +102,8 @@ export function EmbedPlayer({ t, season, episode }: { t: Title; season: number; 
           <div className="relative aspect-video w-full overflow-hidden rounded-2xl bg-surface-deep shadow-2xl ring-1 ring-border">
             {src && (
               <iframe
-                key={src + adBlock}
-                // Blocker: without allow-popups the player can't open pop-up/new-tab ads or redirect this page.
-                {...(adBlock ? { sandbox: "allow-scripts allow-same-origin allow-forms allow-presentation" } : {})}
+                key={src}
+                // No sandbox: providers detect it and replace the video with a warning screen.
                 referrerPolicy="no-referrer"
                 src={src}
                 title={`Player ${t.title}`}
@@ -130,57 +126,61 @@ export function EmbedPlayer({ t, season, episode }: { t: Title; season: number; 
               </div>
             )}
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-            <button type="button" onClick={toggleAdBlock} aria-pressed={adBlock} className={cn("inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-semibold", adBlock ? "border-primary text-primary" : "border-border")}>
-              <span className={cn("h-2 w-2 rounded-full", adBlock ? "bg-primary" : "bg-muted-foreground")} />
-              Bloqueador de anúncios {adBlock ? "ligado" : "desligado"}
-            </button>
-            <span>Bloqueia pop-ups e redirecionamentos. Se o vídeo não carregar, desligue.</span>
-          </div>
           <section className="mt-6 space-y-3">
             <h2 className="font-display text-lg font-semibold">{isSeries ? `${episode}. ${current?.name ?? fallback?.title ?? `Episódio ${episode}`}` : t.title}</h2>
             <p className="text-sm leading-relaxed text-muted-foreground"><Pt text={description} /></p>
-            {isSeries && <Button variant={completed ? "secondary" : "outline"} aria-pressed={completed} onClick={() => library.saveProgress({ key: progressKey, slug: t.slug, position: completed ? 0 : 1, duration: 1 })}>
-              <Check /> {completed ? "Assistido" : "Marcar como assistido"}
-            </Button>}
-            {isSeries && next && <Button className="ml-2" onClick={() => setCountdown(5)}>
-              <SkipForward /> Terminei — pular para o próximo
-            </Button>}
+            {isSeries && <div className="flex flex-wrap gap-3 pt-2">
+              <Button variant={completed ? "secondary" : "outline"} aria-pressed={completed} onClick={() => library.saveProgress({ key: progressKey, slug: t.slug, position: completed ? 0 : 1, duration: 1 })}>
+                <Check /> {completed ? "Assistido" : "Marcar como assistido"}
+              </Button>
+              {next && <Button onClick={() => setCountdown(5)}><SkipForward /> Próximo episódio</Button>}
+            </div>}
           </section>
         </div>
 
         {isSeries && (
-          <aside className="glass flex max-h-[75vh] flex-col rounded-2xl p-4">
-            <div className="flex flex-wrap gap-2">
+          <aside className="glass flex max-h-[80vh] flex-col rounded-2xl p-4">
+            <p className="mb-3 font-display text-lg font-bold">Episódios</p>
+            <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
               {(seasons.length ? seasons : [season]).map((s) => (
                 <Link
                   key={s}
                   to="/assistir/$slug"
                   params={{ slug: t.slug }}
                   search={{ s, ep: 1 }}
-                  className={cn("rounded-full px-3 py-1 text-sm", s === season ? "bg-foreground text-background" : "border border-border hover:bg-foreground/10")}
+                  className={cn("shrink-0 rounded-full px-4 py-1.5 text-sm font-medium", s === season ? "btn-primary" : "btn-glass text-muted-foreground")}
                 >
                   T{s}
                 </Link>
               ))}
             </div>
-            <ul className="mt-4 flex-1 space-y-1 overflow-y-auto pr-1">
+            <ul className="mt-4 flex-1 space-y-2 overflow-y-auto pr-1">
               {eps === null && <li className="text-sm text-muted-foreground">Carregando episódios…</li>}
               {eps?.length === 0 && <li className="text-sm text-muted-foreground">Lista de episódios indisponível.</li>}
-              {inSeason.map((e) => (
-                <li key={e.number}>
-                  <Link
-                    to="/assistir/$slug"
-                    params={{ slug: t.slug }}
-                    search={{ s: e.season, ep: e.number }}
-                    className={cn("flex gap-3 rounded-lg px-3 py-2 text-sm", e.number === episode ? "bg-foreground/15 font-semibold" : "hover:bg-foreground/10")}
-                  >
-                    <span className="w-6 shrink-0 text-muted-foreground">{e.number}</span>
-                    <span className="min-w-0 flex-1"><span className="block"><Pt text={e.name} /></span><span className="mt-1 line-clamp-2 block text-xs font-normal text-muted-foreground">{plainText(e.summary) ? <Pt text={plainText(e.summary)} /> : "Sinopse indisponível."}</span></span>
-                    {progressPct(progress[`${t.slug}:s${e.season}e${e.number}`]) >= 95 && <Check aria-label="Assistido" className="h-4 w-4 shrink-0 text-primary" />}
-                  </Link>
-                </li>
-              ))}
+              {inSeason.map((e) => {
+                const active = e.number === episode;
+                return (
+                  <li key={e.number}>
+                    <Link
+                      to="/assistir/$slug"
+                      params={{ slug: t.slug }}
+                      search={{ s: e.season, ep: e.number }}
+                      className={cn("group flex gap-3 rounded-xl p-2 text-sm transition-colors", active ? "bg-primary/15 ring-1 ring-primary/50" : "hover:bg-foreground/10")}
+                    >
+                      <div className="relative aspect-video w-28 shrink-0 overflow-hidden rounded-lg bg-muted">
+                        {e.image?.medium ? <img src={e.image.medium} alt="" loading="lazy" className="h-full w-full object-cover" /> : <img src={t.image} alt="" loading="lazy" className="h-full w-full object-cover opacity-60" />}
+                        <span className="absolute left-1 top-1 rounded bg-background/80 px-1.5 text-[10px] font-bold">{e.number}</span>
+                        {active && <span className="absolute inset-0 grid place-items-center bg-background/40"><SkipForward className="h-5 w-5 text-primary" /></span>}
+                        {progressPct(progress[`${t.slug}:s${e.season}e${e.number}`]) >= 95 && <span className="absolute right-1 top-1 grid h-5 w-5 place-items-center rounded-full bg-primary text-primary-foreground"><Check aria-label="Assistido" className="h-3 w-3" /></span>}
+                      </div>
+                      <span className="min-w-0 flex-1">
+                        <span className={cn("line-clamp-1 block", active && "font-semibold text-primary")}><Pt text={e.name} /></span>
+                        {plainText(e.summary) && <span className="mt-1 line-clamp-2 block text-xs text-muted-foreground"><Pt text={plainText(e.summary)} /></span>}
+                      </span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </aside>
         )}
