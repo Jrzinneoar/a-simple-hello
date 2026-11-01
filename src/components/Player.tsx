@@ -196,7 +196,7 @@ export function Player({ title, subtitle, sources, progressKey, slug, backSlug, 
                 <RotateCcw className="h-4 w-4" /> Tentar de novo
               </button>
               {nextSource >= 0 && (
-                <button onClick={() => setSrcIdx(nextSource)} className="inline-flex items-center gap-2 rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background">
+                <button onClick={() => setSrcIdx(nextSource)} className="inline-flex items-center gap-2 rounded-full btn-primary px-4 py-2 text-sm font-semibold">
                   Usar {sources[nextSource]?.provider}
                 </button>
               )}
@@ -267,7 +267,7 @@ export function Player({ title, subtitle, sources, progressKey, slug, backSlug, 
                         <div className="flex flex-wrap gap-1">
                           {[{ index: -1, label: "Auto" }, ...levels].map((l) => (
                             <button key={l.index} onClick={() => { inst.current?.setQuality?.(l.index); setLevel(l.index); }}
-                              className={cn("rounded-md px-2 py-1 text-xs", level === l.index ? "bg-foreground text-background" : "bg-foreground/10")}>{l.label}</button>
+                              className={cn("rounded-md px-2 py-1 text-xs", level === l.index ? "btn-primary font-semibold" : "bg-foreground/10")}>{l.label}</button>
                           ))}
                         </div>
                       ) : <p className="text-xs text-muted-foreground">Esta fonte oferece apenas uma qualidade.</p>}
@@ -277,7 +277,7 @@ export function Player({ title, subtitle, sources, progressKey, slug, backSlug, 
                       <div className="flex flex-wrap gap-1">
                         {[0.5, 0.75, 1, 1.25, 1.5, 2].map((r) => (
                           <button key={r} onClick={() => { if (video.current) video.current.playbackRate = r; setRate(r); }}
-                            className={cn("rounded-md px-2 py-1 text-xs", rate === r ? "bg-foreground text-background" : "bg-foreground/10")}>{r}x</button>
+                            className={cn("rounded-md px-2 py-1 text-xs", rate === r ? "btn-primary font-semibold" : "bg-foreground/10")}>{r}x</button>
                         ))}
                       </div>
                     </div>

@@ -34,7 +34,7 @@ function MyList() {
           {list.length ? <Grid items={list} /> : (
             <div className="glass rounded-2xl p-8 text-center">
               <p className="text-muted-foreground">Sua lista está vazia.</p>
-              <Link to="/filmes" className="mt-4 inline-block rounded-full bg-foreground px-5 py-2 text-sm font-semibold text-background">Explorar filmes</Link>
+              <Link to="/filmes" className="mt-4 inline-block rounded-full btn-primary px-5 py-2 text-sm font-semibold">Explorar filmes</Link>
             </div>
           )}
         </div>

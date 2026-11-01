@@ -52,7 +52,7 @@ export function Hero({ items }: { items: Title[] }) {
             to="/assistir/$slug"
             params={{ slug: t.slug }}
             search={t.kind === "series" ? { ep: 1 } : {}}
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background transition-transform hover:scale-105"
+            className="inline-flex h-11 items-center gap-2 rounded-full btn-primary px-7 text-sm font-semibold"
           >
             <Play className="h-4 w-4 fill-current" /> Assistir
           </Link>

@@ -63,11 +63,11 @@ function Detail() {
           <p className="rise mt-5 max-w-2xl leading-relaxed text-foreground/85"><Pt text={t.overview} /></p>
           <div className="rise mt-8 flex flex-wrap gap-3">
             {t.kind === "movie" ? (
-              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{}} className="inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background transition-transform hover:scale-105">
+              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{}} className="inline-flex h-11 items-center gap-2 rounded-full btn-primary px-7 text-sm font-semibold">
                 <Play className="h-4 w-4 fill-current" /> {progress[t.slug] ? "Continuar" : "Assistir"}
               </Link>
             ) : (
-              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: savedEpisode?.season ?? season, ep: savedEpisode?.episode ?? firstUnwatched?.number ?? 1 }} className="inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background transition-transform hover:scale-105">
+              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: savedEpisode?.season ?? season, ep: savedEpisode?.episode ?? firstUnwatched?.number ?? 1 }} className="inline-flex h-11 items-center gap-2 rounded-full btn-primary px-7 text-sm font-semibold">
                 <Play className="h-4 w-4 fill-current" /> {savedEpisode ? `Continuar T${savedEpisode.season}:E${savedEpisode.episode}` : `Assistir T${season}:E${firstUnwatched?.number ?? 1}`}
               </Link>
             )}
@@ -92,32 +92,40 @@ function Detail() {
 
       {t.seasons && (
         <section className="mx-auto mt-14 max-w-[1500px] px-5 md:px-10">
-          <div className="flex items-center gap-3">
-            <h2 className="text-2xl font-semibold">Episódios</h2>
-            <select value={season} onChange={(e) => setSeason(Number(e.target.value))} aria-label="Temporada" className="glass rounded-full bg-transparent px-3 py-1.5 text-sm">
-              {t.seasons.map((s) => <option key={s.number} value={s.number}>Temporada {s.number}</option>)}
-            </select>
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary">Temporada {season}</p>
+              <h2 className="mt-1 text-3xl font-bold">Episódios</h2>
+            </div>
+            <div className="no-scrollbar flex max-w-full gap-2 overflow-x-auto">
+              {t.seasons.map((s) => (
+                <button key={s.number} type="button" onClick={() => setSeason(s.number)} aria-pressed={s.number === season}
+                  className={cn("h-10 shrink-0 rounded-full px-4 text-sm font-medium", s.number === season ? "btn-primary" : "btn-glass text-muted-foreground")}>
+                  T{s.number}
+                </button>
+              ))}
+            </div>
           </div>
-          <ul className="mt-6 space-y-3">
+          <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {eps.map((e) => {
               const p = progressPct(progress[`${t.slug}:s${season}e${e.number}`]);
               return (
                 <li key={e.number}>
-                  <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: season, ep: e.number }} className="group glass flex gap-4 rounded-xl p-3 transition-colors hover:bg-foreground/5">
-                    <div className="relative aspect-video w-40 shrink-0 overflow-hidden rounded-lg sm:w-56">
-                      <img src={e.image ?? t.image} alt="" loading="lazy" width={1536} height={864} className="h-full w-full object-cover" />
+                  <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: season, ep: e.number }} className="group ep-card block h-full overflow-hidden rounded-2xl ring-1 ring-border">
+                    <div className="relative aspect-video overflow-hidden">
+                      <img src={e.image ?? t.image} alt="" loading="lazy" width={1536} height={864} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute inset-0 fade-b opacity-70" />
+                      <span className="absolute left-3 top-3 rounded-md btn-primary px-2 py-0.5 font-display text-xs font-bold">E{e.number}</span>
+                      {p >= 95 && <span className="absolute right-3 top-3 grid h-7 w-7 place-items-center rounded-full bg-primary text-primary-foreground"><Check className="h-4 w-4" aria-label="Assistido" /></span>}
                       <div className="absolute inset-0 grid place-items-center opacity-0 transition-opacity group-hover:opacity-100">
-                        <span className="grid h-10 w-10 place-items-center rounded-full bg-foreground text-background"><Play className="h-4 w-4 fill-current" /></span>
+                        <span className="grid h-14 w-14 place-items-center rounded-full btn-primary"><Play className="h-6 w-6 fill-current" /></span>
                       </div>
                       {p > 0 && <div className="absolute inset-x-0 bottom-0 h-1 bg-border"><div className="h-full bg-primary" style={{ width: `${p}%` }} /></div>}
                     </div>
-                    <div className="min-w-0 py-1">
-                      <p className="font-medium">
-                        {e.number}. <Pt text={e.title} />
-                        {p >= 95 && <Check className="ml-2 inline h-4 w-4 text-accent" aria-label="Assistido" />}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{e.released ? new Date(e.released).toLocaleDateString("pt-BR") : "Data indisponível"}</p>
-                      <p className={cn("mt-2 line-clamp-2 text-sm text-muted-foreground")}>{e.overview ? <Pt text={e.overview} /> : "Sinopse indisponível."}</p>
+                    <div className="p-4">
+                      <p className="line-clamp-1 font-display font-semibold"><Pt text={e.title} /></p>
+                      <p className="text-xs text-muted-foreground">{e.released ? new Date(e.released).toLocaleDateString("pt-BR") : ""}</p>
+                      {e.overview && <p className="mt-2 line-clamp-3 text-sm text-muted-foreground"><Pt text={e.overview} /></p>}
                     </div>
                   </Link>
                 </li>
