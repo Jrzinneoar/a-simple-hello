@@ -18,7 +18,7 @@ export function WatchlistButton({ slug, label = false }: { slug: string; label?:
       }}
       aria-pressed={has}
       aria-label={has ? "Remover da Minha Lista" : "Adicionar à Minha Lista"}
-      className="glass inline-flex h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-medium transition-transform hover:scale-105 active:scale-95"
+      className="btn-glass inline-flex h-11 items-center justify-center gap-2 rounded-full px-5 text-sm font-medium"
     >
       <Icon className="h-4 w-4" />
       {label && (has ? "Na lista" : "Minha Lista")}
@@ -57,7 +57,7 @@ export function TitleCard({ t, progress }: { t: Title; progress?: number | undef
           </p>
         </div>
         <div className="absolute right-3 top-3 flex gap-2 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100">
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-foreground text-background">
+          <span className="grid h-9 w-9 place-items-center rounded-full btn-primary">
             {t.kind === "movie" ? <Play className="h-4 w-4 fill-current" /> : <Info className="h-4 w-4" />}
           </span>
         </div>

@@ -63,11 +63,11 @@ function Detail() {
           <p className="rise mt-5 max-w-2xl leading-relaxed text-foreground/85"><Pt text={t.overview} /></p>
           <div className="rise mt-8 flex flex-wrap gap-3">
             {t.kind === "movie" ? (
-              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{}} className="inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background transition-transform hover:scale-105">
+              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{}} className="inline-flex h-11 items-center gap-2 rounded-full btn-primary px-7 text-sm font-semibold">
                 <Play className="h-4 w-4 fill-current" /> {progress[t.slug] ? "Continuar" : "Assistir"}
               </Link>
             ) : (
-              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: savedEpisode?.season ?? season, ep: savedEpisode?.episode ?? firstUnwatched?.number ?? 1 }} className="inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-6 text-sm font-semibold text-background transition-transform hover:scale-105">
+              <Link to="/assistir/$slug" params={{ slug: t.slug }} search={{ s: savedEpisode?.season ?? season, ep: savedEpisode?.episode ?? firstUnwatched?.number ?? 1 }} className="inline-flex h-11 items-center gap-2 rounded-full btn-primary px-7 text-sm font-semibold">
                 <Play className="h-4 w-4 fill-current" /> {savedEpisode ? `Continuar T${savedEpisode.season}:E${savedEpisode.episode}` : `Assistir T${season}:E${firstUnwatched?.number ?? 1}`}
               </Link>
             )}
